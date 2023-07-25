@@ -26,7 +26,7 @@ export default function Main() {
           </div>
           <div className="flex h-full justify-center">
             <button onClick={() => setTab("search")}>
-              <SVGSearch />
+              <SVGSearch className="h-6 w-6" />
             </button>
           </div>
         </div>
