@@ -10,21 +10,21 @@ export default function Main() {
   const [tab, setTab] = useState<"map" | "search">("search");
 
   return (
-    <main className="flex justify-center items-center h-screen ">
-      <div className="w-full lg:w-2/4 h-full lg:h-4/6 relative">
+    <main className="flex h-screen items-center justify-center">
+      <div className="relative h-full w-full divide-y divide-gray-300/50 lg:h-4/6 lg:w-2/4">
         {/*h-full - h14*/}
         <div className="h-[calc(100%-3.5rem)] outline-none">
           {tab === "map" && <Map />}
           {tab === "search" && <Search />}
         </div>
 
-        <div className="absolute w-full bottom-0 h-14 columns-2">
-          <div className="h-full flex justify-center">
+        <div className="absolute bottom-0 h-14 w-full columns-2">
+          <div className="flex h-full justify-center">
             <button onClick={() => setTab("map")}>
               <SVGMap />
             </button>
           </div>
-          <div className="h-full flex justify-center">
+          <div className="flex h-full justify-center">
             <button onClick={() => setTab("search")}>
               <SVGSearch />
             </button>

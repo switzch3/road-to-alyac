@@ -10,8 +10,8 @@ export default function Main() {
   useSpotPharmacies(naverMap);
 
   return (
-    <div className="relative w-full h-full">
-      <div id={REF_ID} className="w-full h-full"></div>
+    <div className="relative h-full w-full">
+      <div id={REF_ID} className="h-full w-full"></div>
       <button
         className="absolute bottom-7 right-7"
         onClick={() => moveCurrent()}
