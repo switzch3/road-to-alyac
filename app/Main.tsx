@@ -10,7 +10,7 @@ export default function Main() {
   const [tab, setTab] = useState<"map" | "search">("search");
 
   return (
-    <main className="flex h-screen items-center justify-center">
+    <main className="flex h-[100dvh] items-center justify-center">
       <div className="relative h-full w-full divide-y divide-gray-300/50 lg:h-4/6 lg:w-2/4">
         {/*h-full - h14*/}
         <div className="h-[calc(100%-3.5rem)] outline-none">
