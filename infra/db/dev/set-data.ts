@@ -1,4 +1,4 @@
-import data from "./yackook-data.json";
+import data from "../yackook-data.json";
 import { collection, doc, GeoPoint, setDoc } from "firebase/firestore";
 import { firestore } from "@/infra/firebase-client";
 import { Photo } from "@/infra/types/src/Photo";
