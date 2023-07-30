@@ -6,5 +6,5 @@ import { assertPharmacy, Pharmacy } from "../types/Pharmacy";
 export const getPharmacies = async () => {
   const ref = collection(firestore, "pharmacies");
   // Note: 쿼리 갯수 5만개 제한
-  return getDocsData<Pharmacy>(query(ref, limit(100)), assertPharmacy);
+  return getDocsData<Pharmacy>(query(ref, limit(50)), assertPharmacy);
 };

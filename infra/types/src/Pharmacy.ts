@@ -19,5 +19,7 @@ export interface Pharmacy {
   HPID: string;
   postalCode: string;
   jsonUpdatedAt: Timestamp;
+
+  dummyAccessibility: "accessible" | "inaccessible" | "unknown";
 }
 export const assertPharmacy = typia.createAssert<Pharmacy>();
