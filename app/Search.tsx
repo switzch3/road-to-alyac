@@ -31,6 +31,8 @@ export default function Search() {
     }
   };
 
+  // const handleClick = () => {}
+
   return (
     <div className="h-full overflow-scroll">
       <div className="sticky top-0 border-b border-gray-300/50 bg-white p-4">
@@ -58,6 +60,7 @@ export default function Search() {
                   {/*  className="h-12 w-12 flex-none rounded-full bg-gray-50"*/}
                   {/*  src={`https://source.unsplash.com/random/${Math.random()}`}*/}
                   {/*  alt=""*/}
+                  {/*  onClick={handleClick}*/}
                   {/*/>*/}
                   <div className="min-w-0 flex-auto">
                     <p className="text-sm font-semibold leading-6 text-gray-900">

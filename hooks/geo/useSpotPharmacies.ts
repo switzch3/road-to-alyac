@@ -47,16 +47,18 @@ export function useSpotPharmacies(naverMap: naver.maps.Map | undefined) {
           };
 
         pharmacies.map((pharmacy) => {
+          const { dummyAccessibility } = pharmacy;
+
           const { latitude, longitude } = pharmacy.location;
           const location = new naver.maps.LatLng(latitude, longitude);
           const markerOptions = {
             position: location,
             map: naverMap,
             icon: {
-              url: "/map-pin.svg",
-              size: new naver.maps.Size(24, 24),
-              scaledSize: new naver.maps.Size(24, 24),
-              anchor: new naver.maps.Point(24, 24),
+              url: `/${dummyAccessibility}.svg`,
+              size: new naver.maps.Size(36, 36),
+              scaledSize: new naver.maps.Size(36, 36),
+              anchor: new naver.maps.Point(36, 36),
             },
           };
           const marker = new naver.maps.Marker(markerOptions);
