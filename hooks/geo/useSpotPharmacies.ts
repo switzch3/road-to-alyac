@@ -45,6 +45,7 @@ export function useSpotPharmacies(naverMap: naver.maps.Map | undefined) {
             size: new N.Size(40, 40),
             anchor: new N.Point(20, 20),
           };
+
         pharmacies.map((pharmacy) => {
           const { latitude, longitude } = pharmacy.location;
           const location = new naver.maps.LatLng(latitude, longitude);
@@ -62,6 +63,7 @@ export function useSpotPharmacies(naverMap: naver.maps.Map | undefined) {
 
           markers.push(marker);
         });
+
         // console.log("markers", markers);
         new MarkerClustering({
           minClusterSize: 2,
