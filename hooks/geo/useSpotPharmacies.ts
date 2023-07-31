@@ -56,9 +56,9 @@ export function useSpotPharmacies(naverMap: naver.maps.Map | undefined) {
             map: naverMap,
             icon: {
               url: `/${dummyAccessibility}.svg`,
-              size: new naver.maps.Size(36, 36),
-              scaledSize: new naver.maps.Size(36, 36),
-              anchor: new naver.maps.Point(36, 36),
+              size: new naver.maps.Size(24, 24),
+              scaledSize: new naver.maps.Size(24, 24),
+              anchor: new naver.maps.Point(24, 24),
             },
           };
           const marker = new naver.maps.Marker(markerOptions);
