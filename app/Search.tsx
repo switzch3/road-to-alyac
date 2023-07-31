@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 import SVGSearch from "@/app/components/SVGSearch";
 import { getPharmacies } from "@/infra/db/pharmacies";
-import { Pharmacy } from "@/infra/types/Pharmacy";
+import { type Pharmacy } from "@/infra/types/Pharmacy";
 import LabelAccessibility from "@/app/components/LabelAccessibility";
 import addOpenToday from "@/app/addOpenToday";
 
@@ -9,12 +9,27 @@ export default function Search() {
   const [pharmacies, setPharmacies] = useState<
     (Pharmacy & { id: string; isOpen: boolean | null })[]
   >([]);
+  const [allPharmacies, setAllPharmacies] = useState<
+    (Pharmacy & { id: string; isOpen: boolean | null })[]
+  >([]);
 
   useEffect(() => {
     getPharmacies().then((p) => {
       setPharmacies(addOpenToday(p));
+      setAllPharmacies(addOpenToday(p));
     });
   }, []);
+
+  const handleChange = (v: ChangeEvent<HTMLInputElement>) => {
+    const value = v.target.value;
+    if (value) {
+      const searchWord = new RegExp(value, "g");
+      const result = allPharmacies.filter((p) => searchWord.test(p.name));
+      setPharmacies(result);
+    } else {
+      setPharmacies(allPharmacies);
+    }
+  };
 
   return (
     <div className="h-full overflow-scroll">
@@ -28,6 +43,7 @@ export default function Search() {
             placeholder="약국 이름 검색"
             type="text"
             name="search"
+            onChange={handleChange}
           />
         </label>
       </div>
