@@ -7,7 +7,7 @@ import SVGMap from "@/app/components/SVGMap";
 import SVGSearch from "@/app/components/SVGSearch";
 
 export default function Main() {
-  const [tab, setTab] = useState<"map" | "search">("search");
+  const [tab, setTab] = useState<"map" | "search">("map");
 
   return (
     <main className="flex h-[100dvh] items-center justify-center">

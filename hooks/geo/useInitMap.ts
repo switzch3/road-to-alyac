@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useScript } from "usehooks-ts";
+import { NAMHAN } from "@/lib/Namhan";
+import { GANGNAME_SEOCHO } from "@/lib/GangnamSeocho";
 
 const NCP_CLIENT_ID = "oxziiq8o6e";
 
@@ -18,11 +20,26 @@ export function useInitMap(REF_ID: string) {
 
         const mapOptions = {
           center: defaultPosition,
-          zoom: 15, // 네이버 맵의 줌레벨
+          // minZoom: 13, // 읍면동 레벨
+          // maxBounds: seochoGangnam, // 네이버 맵의 줌레벨
+          zoom: 15,
         };
 
         const map = new naver.maps.Map(REF_ID);
         map.setOptions(mapOptions);
+
+        const polygon = new naver.maps.Polygon({
+          map: map,
+          paths: [
+            NAMHAN.map(([lat, lng]) => new naver.maps.LatLng(lat, lng)),
+            GANGNAME_SEOCHO.map(
+              ([lat, lng]) => new naver.maps.LatLng(lat, lng)
+            ),
+          ],
+          fillColor: "#f00",
+          fillOpacity: 0.2,
+          strokeColor: "none",
+        });
 
         boundListener = naver.maps.Event.addListener(
           map,
@@ -31,7 +48,6 @@ export function useInitMap(REF_ID: string) {
             setCurrentBounds(bounds);
           }
         );
-
         setNaverMap(map);
       }
       return () => {
