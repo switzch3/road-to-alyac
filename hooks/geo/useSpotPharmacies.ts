@@ -1,4 +1,7 @@
 import { useEffect } from "react";
+import { select } from "d3-selection";
+import { pie as d3pie, arc as d3arc, PieArcDatum } from "d3-shape";
+import { scaleOrdinal } from "d3-scale";
 
 import { getPharmacies } from "@/infra/db/pharmacies";
 
@@ -6,6 +9,8 @@ import { getPharmacies } from "@/infra/db/pharmacies";
 declare global {
   let N: typeof naver.maps;
 }
+
+type ClusterData = { name: string; value: number };
 
 export function useSpotPharmacies(naverMap: naver.maps.Map | undefined) {
   useEffect(() => {
@@ -15,36 +20,12 @@ export function useSpotPharmacies(naverMap: naver.maps.Map | undefined) {
     import("@/infra/marker-clustering").then(({ MarkerClustering }) => {
       getPharmacies().then((pharmacies) => {
         const markers: naver.maps.Marker[] = [];
-        const htmlMarker1 = {
-            content:
-              '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/cluster-marker-1.png);background-size:contain;"></div>',
-            size: new N.Size(40, 40),
-            anchor: new N.Point(20, 20),
-          },
-          htmlMarker2 = {
-            content:
-              '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/cluster-marker-2.png);background-size:contain;"></div>',
-            size: new N.Size(40, 40),
-            anchor: new N.Point(20, 20),
-          },
-          htmlMarker3 = {
-            content:
-              '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/cluster-marker-3.png);background-size:contain;"></div>',
-            size: new N.Size(40, 40),
-            anchor: new N.Point(20, 20),
-          },
-          htmlMarker4 = {
-            content:
-              '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/cluster-marker-4.png);background-size:contain;"></div>',
-            size: new N.Size(40, 40),
-            anchor: new N.Point(20, 20),
-          },
-          htmlMarker5 = {
-            content:
-              '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold;background:url(/cluster-marker-5.png);background-size:contain;"></div>',
-            size: new N.Size(40, 40),
-            anchor: new N.Point(20, 20),
-          };
+        const svgMarker = {
+          content:
+            '<div style="cursor:pointer;width:40px;height:40px;line-height:42px;font-size:10px;color:white;text-align:center;font-weight:bold"><svg width="100%" height="100%" viewBox="-20, -20, 40, 40"></svg></div>',
+          size: new N.Size(40, 40),
+          anchor: new N.Point(20, 20),
+        };
 
         pharmacies.map((pharmacy) => {
           const { dummyAccessibility } = pharmacy;
@@ -56,9 +37,9 @@ export function useSpotPharmacies(naverMap: naver.maps.Map | undefined) {
             map: naverMap,
             icon: {
               url: `/${dummyAccessibility}.svg`,
-              size: new naver.maps.Size(24, 24),
-              scaledSize: new naver.maps.Size(24, 24),
-              anchor: new naver.maps.Point(24, 24),
+              size: new naver.maps.Size(28, 28),
+              scaledSize: new naver.maps.Size(28, 28),
+              anchor: new naver.maps.Point(28, 28),
             },
           };
           const marker = new naver.maps.Marker(markerOptions);
@@ -66,26 +47,86 @@ export function useSpotPharmacies(naverMap: naver.maps.Map | undefined) {
           markers.push(marker);
         });
 
-        // console.log("markers", markers);
-        new MarkerClustering({
+        const markderClustering = new MarkerClustering({
           minClusterSize: 2,
           maxZoom: 17,
           map: naverMap,
           markers,
           disableClickZoom: false,
           gridSize: 120,
-          icons: [
-            htmlMarker1,
-            htmlMarker2,
-            htmlMarker3,
-            htmlMarker4,
-            htmlMarker5,
-          ],
-          indexGenerator: [10, 100, 200, 500, 1000],
-          stylingFunction: function (clusterMarker: any, count: number) {
-            clusterMarker.getElement().children[0].textContent = count;
-          },
+          icons: [svgMarker],
+          indexGenerator: [1],
         });
+        (markderClustering as any).setStylingFunction(
+          (clusterMarker: any, count: number) => {
+            const cluster = markderClustering._clusters.find(
+              (c) => c._clusterMarker._nmarker_id === clusterMarker._nmarker_id
+            );
+            const memberNames = cluster._clusterMember.map(
+              (
+                m: any // marker
+              ) => m.icon.url.replace("/", "").replace(".svg", "")
+            );
+
+            const counts = memberNames.reduce(
+              (
+                acc: {
+                  [key: string]: number;
+                },
+                cur: string
+              ) => {
+                acc[cur]++;
+                return acc;
+              },
+              {
+                accessible: 0,
+                inaccessible: 0,
+                unknown: 0,
+              }
+            );
+
+            const data: ClusterData[] = Object.keys(counts).map((k) => {
+              return { name: k, value: counts[k] };
+            });
+
+            const svg = select(clusterMarker.getElement()).select("svg");
+
+            const color = scaleOrdinal<string>()
+              .domain(["accessible", "inaccessible", "unknown"])
+              .range(["#15803D", "#B91C1C", "#FFAB33"]);
+
+            const pie = d3pie<ClusterData>()
+              .sort(null)
+              .value((d) => d.value);
+
+            const arc = d3arc<PieArcDatum<ClusterData>>()
+              .innerRadius(14)
+              .outerRadius(Math.min(40, 40) / 2 - 1);
+
+            const arcs = pie(data);
+
+            svg
+              .append("g")
+              .attr("stroke", "white")
+              .selectAll()
+              .data(arcs)
+              .join("path")
+              .attr("fill", (d) => color(d.data.name))
+              .attr("d", arc);
+
+            svg
+              .append("circle")
+              .attr("fill", "white")
+              .attr("opacity", "80%")
+              .attr("r", 13);
+            svg
+              .append("text")
+              .attr("transform", "translate(0, 5)")
+              .attr("font-size", 14)
+              .attr("text-anchor", "middle")
+              .text((d) => count);
+          }
+        );
       });
     });
   }, [naverMap]);
