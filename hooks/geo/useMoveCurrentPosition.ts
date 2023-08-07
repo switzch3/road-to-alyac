@@ -8,13 +8,13 @@ export function useMoveCurrentPosition(naverMap: naver.maps.Map | undefined) {
   const [current, setCurrent] = useState<naver.maps.LatLng>();
 
   useEffect(() => {
-    if (!currentPosition) return;
+    if (!currentPosition || !naverMap) return;
     const current = new naver.maps.LatLng(
       currentPosition.coords.latitude,
       currentPosition.coords.longitude
     );
     setCurrent(current);
-  }, [currentPosition]);
+  }, [currentPosition, naverMap]);
 
   useEffect(() => {
     if (!current || !naverMap || currentMarker) return;
