@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import { getPharmacies } from "@/infra/db/pharmacies";
 import { stylingCluster } from "@/lib/cluster/styling";
+import tooltip from "@/app/components/Tooltip";
 
 // marker-clustering.d.ts
 declare global {
@@ -14,6 +15,18 @@ export function useSpotPharmacies(naverMap: naver.maps.Map | undefined) {
   useEffect(() => {
     if (!naverMap) return;
 
+    const listeners: naver.maps.MapEventListener[] = [];
+    const infowindow = new naver.maps.InfoWindow({
+      content: "",
+      maxWidth: 140,
+      backgroundColor: "transparent",
+      borderColor: "none",
+      anchorSize: new naver.maps.Size(20, 10),
+    });
+
+    naver.maps.Event.addListener(naverMap, "click", function (e) {
+      infowindow.close();
+    });
     // Note: naver map 로딩이 되고 나서 로드해야기 때문이다.
     import("@/infra/marker-clustering").then(({ MarkerClustering }) => {
       getPharmacies().then((pharmacies) => {
@@ -26,7 +39,7 @@ export function useSpotPharmacies(naverMap: naver.maps.Map | undefined) {
         };
 
         pharmacies.map((pharmacy) => {
-          const { dummyAccessibility } = pharmacy;
+          const { dummyAccessibility, address, name, isOpen } = pharmacy;
 
           const { latitude, longitude } = pharmacy.location;
           const location = new naver.maps.LatLng(latitude, longitude);
@@ -37,11 +50,22 @@ export function useSpotPharmacies(naverMap: naver.maps.Map | undefined) {
               url: `/${dummyAccessibility}.svg`,
               size: new naver.maps.Size(28, 28),
               scaledSize: new naver.maps.Size(28, 28),
-              anchor: new naver.maps.Point(28, 28),
             },
           };
           const marker = new naver.maps.Marker(markerOptions);
 
+          const listener = naver.maps.Event.addListener(
+            marker,
+            "click",
+            function (e) {
+              infowindow.setContent(
+                tooltip({ name, address, isOpen, dummyAccessibility })
+              );
+              infowindow.open(naverMap, marker);
+            }
+          );
+
+          listeners.push(listener);
           markers.push(marker);
         });
 
@@ -62,5 +86,9 @@ export function useSpotPharmacies(naverMap: naver.maps.Map | undefined) {
         );
       });
     });
+
+    return () => {
+      naver.maps.Event.removeListener(listeners);
+    };
   }, [naverMap]);
 }
