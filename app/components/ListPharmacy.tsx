@@ -1,25 +1,23 @@
 import LabelAccessibility from "@/app/components/LabelAccessibility";
+import type { ReactNode } from "react";
 
 export default function ListPharmacy({
   name,
   address,
   dummyAccessibility,
   isOpen,
+  children,
 }: {
   name: string;
   address: string;
   dummyAccessibility: "accessible" | "inaccessible" | "unknown";
   isOpen: boolean | null;
+  children?: ReactNode;
 }) {
   return (
     <li className="flex justify-between gap-x-6 py-5">
       <div className="flex gap-x-4">
-        {/*<img*/}
-        {/*  className="h-12 w-12 flex-none rounded-full bg-gray-50"*/}
-        {/*  src={`https://source.unsplash.com/random/${Math.random()}`}*/}
-        {/*  alt=""*/}
-        {/*  onClick={handleClick}*/}
-        {/*/>*/}
+        {children}
         <div className="min-w-0 flex-auto">
           <p className="text-sm font-semibold leading-6 text-gray-900">
             {name}
@@ -43,3 +41,18 @@ export default function ListPharmacy({
     </li>
   );
 }
+
+//
+// {/*<img*/}
+// {/*  className="h-12 w-12 flex-none rounded-full bg-gray-50"*/}
+// {/*  src={`https://source.unsplash.com/random/${Math.random()}`}*/}
+// {/*  alt=""*/}
+// {/*  onClick={handleClick}*/}
+// {/*/>*/}
+// <RcImage.PreviewGroup
+//   items={[
+//     "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+//   ]}
+// >
+//   <RcImage src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png" />
+// </RcImage.PreviewGroup>

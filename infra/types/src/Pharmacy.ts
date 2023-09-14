@@ -7,6 +7,7 @@ export interface Pharmacy {
   photos: Photo[] | null;
   location: GeoPoint;
   address: string;
+  accessibility?: "accessible" | "inaccessible" | "unknown";
   tel: string;
   monday: [string, string];
   tuesday: [string, string];
